@@ -1,7 +1,7 @@
 name: BeeBot
 on:
   pull_request:
-    types: [review_request_removed]
+    types: [review_requested]
 jobs:
   notify_automatically_assigned_review_request:
     runs-on: ubuntu-latest
