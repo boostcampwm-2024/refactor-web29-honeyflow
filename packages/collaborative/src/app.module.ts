@@ -8,6 +8,7 @@ import { getMongooseConfig } from './common/config/mongo.config';
 import { getTypeOrmConfig } from './common/config/typeorm.config';
 import { NoteModule } from './note/note.module';
 import { SpaceModule } from './space/space.module';
+import { YjsModule } from './yjs/yjs.module';
 import { TestModule } from './test/test.module';
 
 @Module({
@@ -24,6 +25,7 @@ import { TestModule } from './test/test.module';
       useFactory: getTypeOrmConfig,
     }),
     SpaceModule,
+    YjsModule,
     NoteModule,
     TestModule,
     CollaborativeModule,

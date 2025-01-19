@@ -22,6 +22,34 @@ services:
       timeout: 5s
       retries: 3
     command: --bind-address=0.0.0.0
+
+  collaborative:
+    build:
+      context: .
+      dockerfile: ./packages/collaborative/Dockerfile
+    container_name: collaborative
+    ports:
+      - "3001:3001"
+      - "9001:9001"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MYSQL_HOST=mysql-container
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=dev_db
+      - MYSQL_PASSWORD=1234
+      - MYSQL_USER=honey
+      - NODE_ENV=dev
+      - MONGO_HOST=mongodb-container
+      - MONGO_USER=honey
+      - MONGO_PASSWORD=1234
+      - MONGO_DB=dev_db
+      - LOG_LEVEL=info
+    networks:
+      - app-network
   api:
     build:
       context: .
@@ -29,7 +57,6 @@ services:
     container_name: api
     ports:
       - "3000:3000"
-      - "9001:9001"
     depends_on:
       mysql:
         condition: service_healthy
@@ -58,6 +85,8 @@ services:
     ports:
       - "80:80"
     depends_on:
+      collaborative:
+        condition: service_started
       api:
         condition: service_started
     networks:
