@@ -21,6 +21,7 @@ export class CollaborativeService {
         length: space.length,
       });
 
+
       let spaceJsonData;
       try {
         spaceJsonData = JSON.parse(space);
@@ -59,6 +60,7 @@ export class CollaborativeService {
         method: 'findBySpace',
         spaceId: id,
       });
+      
 
       const space = await this.spaceService.findById(id);
 
