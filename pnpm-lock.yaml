@@ -51,7 +51,7 @@ importers:
         specifier: ^8.13.0
         version: 8.14.0(eslint@9.14.0(jiti@1.21.6))(typescript@5.6.3)
 
-  packages/backend:
+  packages/api:
     dependencies:
       '@elastic/elasticsearch':
         specifier: ^8.16.1

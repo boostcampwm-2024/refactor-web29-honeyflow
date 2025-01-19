@@ -22,11 +22,11 @@ services:
       timeout: 5s
       retries: 3
     command: --bind-address=0.0.0.0
-  backend:
+  api:
     build:
       context: .
-      dockerfile: ./packages/backend/Dockerfile
-    container_name: backend
+      dockerfile: ./packages/api/Dockerfile
+    container_name: api
     ports:
       - "3000:3000"
       - "9001:9001"
@@ -58,7 +58,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      backend:
+      api:
         condition: service_started
     networks:
       - app-network

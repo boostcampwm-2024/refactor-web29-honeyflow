@@ -1,8 +1,8 @@
 services:
-  backend:
+  api:
     build:
       context: .
-      dockerfile: ./packages/backend/Dockerfile
+      dockerfile: ./packages/api/Dockerfile
     restart: unless-stopped
     environment:
       - NODE_ENV=development
