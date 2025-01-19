@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { CollaborativeModule } from './collaborative/collaborative.module';
 import { getMongooseConfig } from './common/config/mongo.config';
 import { getTypeOrmConfig } from './common/config/typeorm.config';
 import { NoteModule } from './note/note.module';
@@ -26,7 +25,6 @@ import { TestModule } from './test/test.module';
     SpaceModule,
     NoteModule,
     TestModule,
-    CollaborativeModule,
   ],
 })
 export class AppModule implements OnModuleInit {
