@@ -1,18 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-
-import { ERROR_MESSAGES } from '../common/constants/error.message.constants';
-import { MAX_SPACES } from '../common/constants/space.constants';
-import { SpaceDocument } from './space.schema';
+import { SpaceDocument } from 'src/space/space.schema';
+import { MAX_SPACES } from '../constants/space.constants';
+import { ERROR_MESSAGES } from '../constants/error.message.constants';
+import { NoteDocument } from 'src/note/note.schema';
 
 @Injectable()
-export class SpaceValidation {
+export class ValidationService {
   constructor(
+    @InjectModel(NoteDocument.name)
+    private readonly noteModel: Model<SpaceDocument>,
     @InjectModel(SpaceDocument.name)
     private readonly spaceModel: Model<SpaceDocument>,
   ) {}
+  async validateNoteExsts(urlPath: string) {
+    const note = await this.noteModel.findOne({ urlPath });
 
+    if (!note) {
+      throw new Error(ERROR_MESSAGES.SPACE.NOT_FOUND);
+    }
+
+    return note;
+  }
   async validateSpaceLimit(userId: string) {
     const spaceCount = await this.spaceModel.countDocuments({ userId });
 

@@ -16,7 +16,7 @@ import { ERROR_MESSAGES } from '../common/constants/error.message.constants';
 import { GUEST_USER_ID } from '../common/constants/space.constants';
 import { CreateNoteDto } from './dto/note.dto';
 import { NoteService } from './note.service';
-import { SpaceService } from 'src/space/space.service';
+import { ValidationService } from 'src/common/validation/validation.service';
 
 @ApiTags('note')
 @Controller('note')
@@ -25,7 +25,7 @@ export class NoteController {
 
   constructor(
     private readonly noteService: NoteService,
-    private readonly spaceService: SpaceService,
+    private readonly validationService: ValidationService,
   ) {}
 
   @Version('1')
@@ -57,11 +57,12 @@ export class NoteController {
     }
 
     try {
-      const space = await this.spaceService.findById(spaceId);
+      const space = await this.validationService.validateSpaceExists(spaceId);
+
       if (!space) {
-        return new HttpException(
-          ERROR_MESSAGES.NOTE.BAD_REQUEST,
-          HttpStatus.BAD_REQUEST,
+        throw new HttpException(
+          ERROR_MESSAGES.SPACE.NOT_FOUND,
+          HttpStatus.NOT_FOUND,
         );
       }
       const note = await this.noteService.create(userId, noteName);
