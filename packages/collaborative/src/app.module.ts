@@ -10,6 +10,8 @@ import { NoteModule } from './note/note.module';
 import { SpaceModule } from './space/space.module';
 import { YjsModule } from './yjs/yjs.module';
 import { TestModule } from './test/test.module';
+import { RedisService } from './redis/redis.service';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -29,7 +31,9 @@ import { TestModule } from './test/test.module';
     NoteModule,
     TestModule,
     CollaborativeModule,
+    RedisModule,
   ],
+  providers: [RedisService],
 })
 export class AppModule implements OnModuleInit {
   private readonly logger = new Logger(AppModule.name);
