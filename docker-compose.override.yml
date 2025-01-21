@@ -21,11 +21,11 @@ services:
       retries: 3
     command: --bind-address=0.0.0.0
 
-  collaborative:
+  collaborative_room1:
     build:
       context: .
       dockerfile: ./packages/collaborative/Dockerfile
-    container_name: collaborative
+    container_name: collaborative-room1
     ports:
       - "3001:3001"
       - "9001:9001"
@@ -52,6 +52,43 @@ services:
       - REDIS_USERNAME=honey
       - REDIS_PORT=6379
       - REDIS_PASSWORD=1234
+      - SERVER_ID=room1
+      - WS_PORT=9001
+    networks:
+      - app-network
+  collaborative_room2:
+    build:
+      context: .
+      dockerfile: ./packages/collaborative/Dockerfile
+    container_name: collaborative-room2
+    ports:
+      - "3002:3002"
+      - "9002:9002"
+    depends_on:
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MYSQL_HOST=mysql-container
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=dev_db
+      - MYSQL_PASSWORD=1234
+      - MYSQL_USER=honey
+      - NODE_ENV=dev
+      - MONGO_HOST=mongodb-container
+      - MONGO_USER=honey
+      - MONGO_PASSWORD=1234
+      - MONGO_DB=dev_db
+      - LOG_LEVEL=debug
+      - REDIS_HOST=redis-container
+      - REDIS_USERNAME=honey
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=1234
+      - SERVER_ID=room2
+      - WS_PORT=9002
     networks:
       - app-network
   api:
@@ -110,8 +147,10 @@ services:
     depends_on:
       load-balancer:
         condition: service_started
-      collaborative:
+      collaborative_room1:
         condition: service_started
+      # collaborative_room2:
+      # condition: service_started
       api:
         condition: service_started
     networks:

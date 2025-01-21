@@ -12,6 +12,7 @@ import { YjsModule } from './yjs/yjs.module';
 import { TestModule } from './test/test.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
+import { ResourceMatricsModule } from './common/resource-matrics/resource-matrics.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { RedisModule } from './redis/redis.module';
     TestModule,
     CollaborativeModule,
     RedisModule,
+    ResourceMatricsModule,
   ],
   providers: [RedisService],
 })

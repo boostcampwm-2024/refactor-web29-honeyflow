@@ -14,6 +14,7 @@ import { CollaborativeService } from '../collaborative/collaborative.service';
 import { ERROR_MESSAGES } from '../common/constants/error.message.constants';
 import { WebsocketStatus } from '../common/constants/websocket.constants';
 import { parseSocketUrl } from '../common/utils/socket.util';
+import { RedisService } from 'src/redis/redis.service';
 
 function parseDocName(docName: string) {
   const [type, id] = docName.split(':');
@@ -25,11 +26,15 @@ function parseDocName(docName: string) {
   throw new Error('Invalid docName');
 }
 
-@WebSocketGateway(9001)
+const PORT = Number(process.env.WS_PORT) | 9001;
+@WebSocketGateway(PORT)
 export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(YjsGateway.name);
 
-  constructor(private readonly collaborativeService: CollaborativeService) {
+  constructor(
+    private readonly collaborativeService: CollaborativeService,
+    private readonly redisService: RedisService,
+  ) {
     this.logger.debug('constructor start');
     setPersistence({
       provider: '',
@@ -130,7 +135,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log('WebSocket 연결 시작');
 
     try {
-      const url = request.url || '';
+      const url = connection.url || '';
       this.logger.debug(`요청된 URL: ${url}`);
 
       const { urlType, urlId } = parseSocketUrl(url);
@@ -149,6 +154,8 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         `WebSocket 초기화 시작 - Type: ${urlType}, ID: ${urlId}`,
       );
 
+      this.redisService.updateRedisConnection(urlId!, 'add');
+
       urlType === 'space'
         ? await this.initializeSpace(connection, request, urlId as string)
         : await this.initializeNote(connection, request, urlId as string);
@@ -159,6 +166,26 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(connection: WebSocket) {
     this.logger.log('WebSocket 연결 종료');
+
+    try {
+      const url = connection.url || '';
+      this.logger.debug(`요청된 URL: ${url}`);
+
+      const { urlType, urlId } = parseSocketUrl(url);
+      this.logger.debug(`URL 분석 결과 - Type: ${urlType}, ID: ${urlId}`);
+
+      if (!this.validateUrl(urlType, urlId)) {
+        this.logger.warn(`유효하지 않은 URL - Type: ${urlType}, ID: ${urlId}`);
+        connection.close(
+          WebsocketStatus.POLICY_VIOLATION,
+          ERROR_MESSAGES.SOCKET.INVALID_URL,
+        );
+        return;
+      }
+      this.redisService.updateRedisConnection(urlId!, 'remove');
+    } catch (error) {
+      this.logger.error(`WebSocket 연결 실패 - 에러 메시지: ${error.message}`);
+    }
   }
 
   private validateUrl(urlType: string | null, urlId: string | null): boolean {
