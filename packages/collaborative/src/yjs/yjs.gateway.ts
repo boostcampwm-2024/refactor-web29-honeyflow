@@ -106,7 +106,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const { type, id } = parseDocName(docName);
     this.logger.debug(`문서 이름 분석 결과 - type: ${type}, id: ${id}`);
-
+    this.redisService.updateRedisConnection(id, 'remove');
     try {
       if (type === 'space') {
         const yContext = ydoc.getMap('context');
@@ -135,7 +135,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log('WebSocket 연결 시작');
 
     try {
-      const url = connection.url || '';
+      const url = request.url || '';
       this.logger.debug(`요청된 URL: ${url}`);
 
       const { urlType, urlId } = parseSocketUrl(url);
@@ -166,26 +166,6 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(connection: WebSocket) {
     this.logger.log('WebSocket 연결 종료');
-
-    try {
-      const url = connection.url || '';
-      this.logger.debug(`요청된 URL: ${url}`);
-
-      const { urlType, urlId } = parseSocketUrl(url);
-      this.logger.debug(`URL 분석 결과 - Type: ${urlType}, ID: ${urlId}`);
-
-      if (!this.validateUrl(urlType, urlId)) {
-        this.logger.warn(`유효하지 않은 URL - Type: ${urlType}, ID: ${urlId}`);
-        connection.close(
-          WebsocketStatus.POLICY_VIOLATION,
-          ERROR_MESSAGES.SOCKET.INVALID_URL,
-        );
-        return;
-      }
-      this.redisService.updateRedisConnection(urlId!, 'remove');
-    } catch (error) {
-      this.logger.error(`WebSocket 연결 실패 - 에러 메시지: ${error.message}`);
-    }
   }
 
   private validateUrl(urlType: string | null, urlId: string | null): boolean {

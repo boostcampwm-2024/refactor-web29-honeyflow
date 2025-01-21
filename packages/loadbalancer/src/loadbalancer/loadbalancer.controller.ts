@@ -1,4 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Delete, Param, Version } from '@nestjs/common';
 
-@Controller('loadbalancer')
-export class LoadbalancerController {}
+@Controller('lb')
+export class LoadbalancerController {
+  @Version('1')
+  @Delete('/:id')
+  async deleteNote(@Param('id') id: string) {}
+}
