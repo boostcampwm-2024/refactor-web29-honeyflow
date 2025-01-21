@@ -2,12 +2,13 @@ import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { createClient } from 'redis';
 import { Cron } from '@nestjs/schedule';
 import { ResourceMetricsService } from 'src/common/resource-matrics/resource-matrics.service';
+
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
   private client;
 
   constructor(
-    private readonly resourceMatricsService: ResourceMetricsService,
+    private readonly resourceMetricsService: ResourceMetricsService,
   ) {}
 
   async onModuleInit() {
@@ -37,22 +38,24 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     if (action === 'add') {
       connectionData.connectionCount += 1;
     } else {
-      connectionData.connectionCount = Math.max(
-        connectionData.connectionCount - 1,
-        0,
-      );
+      this.client.del(key);
+      return;
     }
 
     await this.client.set(key, JSON.stringify(connectionData));
   }
 
   @Cron('*/10 * * * * *')
-  async cronCPUUsage() {
+  async cronSystemMetrics() {
     const serverId = process.env.SERVER_ID || 'default-server';
-    const key = `server:cpu:${serverId}`;
-    const cpuUsage = this.resourceMatricsService.getCpuUsage();
+    const key = `server:system:metrics`;
+
     try {
-      this.client.set(key, JSON.stringify({ serverId, cpuUsage }));
+      const { cpuUsage } = await this.resourceMetricsService.getSystemMetrics();
+      await this.client.zAdd(key, {
+        score: cpuUsage,
+        value: serverId,
+      });
     } catch (err) {}
   }
 }

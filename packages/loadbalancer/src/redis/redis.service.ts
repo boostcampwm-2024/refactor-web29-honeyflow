@@ -24,40 +24,22 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     return await this.client.get(key);
   }
 
-  async set(key: string, value: string, ttl?: number) {
-    if (ttl) {
-      await this.client.set(key, value, { EX: ttl });
-    } else {
-      await this.client.set(key, value);
+  async findConnectedServer(id: string) {
+    const key = `findConnectedServer:${id}`;
+    return await this.client.get(key);
+  }
+
+  async getOptimalServer(key: string) {
+    try {
+      const optimalServer = await this.client.zRange(key, 0, 0, {
+        WITHSCORES: true,
+      });
+      if (optimalServer.length === 0) {
+        return null;
+      }
+      return optimalServer[0];
+    } catch (err) {
+      throw err;
     }
-  }
-
-  async addToSortedSet(
-    key: string,
-    score: number,
-    member: string,
-  ): Promise<void> {
-    await this.client.zAdd(key, [{ score, value: member }]);
-  }
-
-  async getSortedSetRange(
-    key: string,
-    start: number,
-    end: number,
-  ): Promise<string[]> {
-    return await this.client.zRange(key, start, end);
-  }
-
-  async acquireLock(lockKey: string, ttl: number) {
-    const lockValue = `${Date.now()}`;
-    const result = await this.client.set(lockKey, lockValue, {
-      NX: true,
-      PX: ttl,
-    });
-    return result === 'OK';
-  }
-
-  async releaseLock(lockKey: string) {
-    await this.client.del(lockKey);
   }
 }
