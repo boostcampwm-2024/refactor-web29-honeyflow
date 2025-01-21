@@ -27,7 +27,7 @@ export class AppController {
     const connectedServer = await this.redisService.findConnectedServer(id);
     if (!connectedServer) {
       const optimalServer =
-        await this.redisService.getOptimalServer('SERVER_MATRIC_KEY');
+        await this.redisService.getOptimalServer(SERVER_MATRIC_KEY);
       return { server: optimalServer, type: type, urlId: id };
     }
 
