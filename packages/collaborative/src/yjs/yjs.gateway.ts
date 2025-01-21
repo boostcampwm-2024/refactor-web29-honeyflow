@@ -26,7 +26,7 @@ function parseDocName(docName: string) {
   throw new Error('Invalid docName');
 }
 
-const PORT = Number(process.env.WS_PORT) | 9001;
+const PORT = Number(process.env.WS_PORT);
 @WebSocketGateway(PORT)
 export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(YjsGateway.name);
