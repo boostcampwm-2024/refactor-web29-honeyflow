@@ -13,9 +13,11 @@ import { TestModule } from './test/test.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
 import { ResourceMatricsModule } from './common/resource-matrics/resource-matrics.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
