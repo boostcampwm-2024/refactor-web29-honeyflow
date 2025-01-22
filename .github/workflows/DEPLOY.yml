@@ -33,7 +33,7 @@ jobs:
             cd $RELEASE_DIR
 
             # 코드 복제
-            git clone -b dev https://github.com/boostcampwm-2024/web29-honeyflow.git .
+            git clone -b dev https://github.com/boostcampwm-2024/refactor-web29-honeyflow .
 
             # 환경변수 파일 생성
             echo "$ENV_FILE_CONTENTS" > .env
