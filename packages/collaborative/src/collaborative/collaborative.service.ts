@@ -12,7 +12,6 @@ export class CollaborativeService {
     private readonly spaceService: SpaceService,
     private readonly noteService: NoteService,
   ) {}
-
   async updateBySpace(id: string, space: string) {
     try {
       this.logger.log('스페이스 정보 업데이트 시작', {

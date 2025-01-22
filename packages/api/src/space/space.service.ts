@@ -5,16 +5,15 @@ import { BreadcrumbItem, Node, SpaceData } from 'shared/types';
 import { v4 as uuid } from 'uuid';
 
 import { SpaceDocument } from './space.schema';
-import { SpaceValidation } from './space.validation.service';
 import { NoteService } from 'src/note/note.service';
-import { UpdateSpaceDto } from './dto/update.space.dto';
+import { ValidationService } from 'src/common/validation/validation.service';
 
 @Injectable()
 export class SpaceService {
   private readonly logger = new Logger(SpaceService.name);
 
   constructor(
-    private readonly spaceValidation: SpaceValidation,
+    private readonly validationService: ValidationService,
     private readonly noteService: NoteService,
     @InjectModel(SpaceDocument.name)
     private readonly spaceModel: Model<SpaceDocument>,
@@ -70,8 +69,8 @@ export class SpaceService {
 
     Nodes[headNode.id] = headNode;
 
-    await this.spaceValidation.validateSpaceLimit(userId);
-    await this.spaceValidation.validateParentNodeExists(parentContextNodeId);
+    await this.validationService.validateSpaceLimit(userId);
+    await this.validationService.validateParentNodeExists(parentContextNodeId);
 
     const spaceDto = {
       id: nodeUuid,

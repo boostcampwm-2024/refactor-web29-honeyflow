@@ -8,14 +8,98 @@ services:
         curl -f telnet://${MYSQL_HOST}:${MYSQL_PORT} || exit 1;
         curl -f telnet://${MONGO_HOST}:27017 || exit 1;
       "
-    networks:
-      - app-network
     healthcheck:
       test: ["CMD", "/bin/sh", "-c", "exit 0"]
       interval: 10s
       timeout: 5s
       retries: 3
 
+  loadbalancer:
+    container_name: loadbalancer
+    ports:
+      - "4242:4242"
+    build:
+      target: production
+    environment:
+      # 배포 환경 세팅
+      - NODE_ENV=production
+
+      # Mongo 세팅
+      - LOG_LEVEL=${LOG_LEVEL}
+
+      # Redis 세팅
+      - REDIS_USERNAME=${REDIS_USERNAME}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    networks:
+      - app-network
+  collaborative-room1:
+    container_name: collaborative-room1
+    ports:
+      - "9001:9001"
+    build:
+      target: production
+    environment:
+      # 배포 환경 세팅
+      - NODE_ENV=production
+
+      # MySQL 세팅
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+
+      # Mongo 세팅
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=${MONGO_DB}
+      - LOG_LEVEL=${LOG_LEVEL}
+
+      # Redis 세팅
+      - REDIS_USERNAME=${REDIS_USERNAME}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+
+      - WS_PORT=${WS1_PORT}
+    networks:
+      - app-network
+  collaborative-room2:
+    container_name: collaborative-room2
+    ports:
+      - "9001:9002"
+    build:
+      target: production
+    environment:
+      # 배포 환경 세팅
+      - NODE_ENV=production
+
+      # MySQL 세팅
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+
+      # Mongo 세팅
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=${MONGO_DB}
+      - LOG_LEVEL=${LOG_LEVEL}
+
+      # Redis 세팅
+      - REDIS_USERNAME=${REDIS_USERNAME}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+
+      - WS_PORT=${WS2_PORT}
+    networks:
+      - app-network
   api:
     container_name: api
     ports:

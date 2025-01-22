@@ -4,6 +4,7 @@ import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
 
 import { WS_URL } from "@/api/constants";
+import { getRoomNumber } from "@/api/load-balancer";
 import { generateUserColor } from "@/lib/utils";
 
 export default function useYjsConnection(docName: string) {
@@ -17,35 +18,54 @@ export default function useYjsConnection(docName: string) {
   useEffect(() => {
     setStatus("connecting");
 
-    const doc = new Y.Doc();
-    const provider = new WebsocketProvider(`${WS_URL}/space`, docName, doc);
+    const requestRoomNumber = async () => {
+      const response = await getRoomNumber("space", docName);
+      return response.server;
+    };
 
-    setYDoc(doc);
-    setYProvider(provider);
+    const initYjs = async () => {
+      const roomNumber = await requestRoomNumber();
 
-    const { awareness } = provider;
+      const doc = new Y.Doc();
+      const provider = new WebsocketProvider(
+        `${WS_URL}/${roomNumber}/space`,
+        docName,
+        doc,
+      );
 
-    provider.on(
-      "status",
-      (event: { status: "connected" | "connecting" | "disconnected" }) => {
-        if (event.status === "connected") {
-          awareness.setLocalStateField("color", generateUserColor());
+      setYDoc(doc);
+      setYProvider(provider);
+
+      const { awareness } = provider;
+
+      provider.on(
+        "status",
+        (event: { status: "connected" | "connecting" | "disconnected" }) => {
+          if (event.status === "connected") {
+            awareness.setLocalStateField("color", generateUserColor());
+          }
+          setStatus(event.status);
+        },
+      );
+
+      provider.once("connection-close", (event: CloseEvent) => {
+        if (event.code === 1008) {
+          provider.shouldConnect = false;
+          setError(new Error("찾을 수 없거나 접근할 수 없는 스페이스예요."));
         }
-        setStatus(event.status);
-      },
-    );
+      });
+    };
 
-    provider.once("connection-close", (event: CloseEvent) => {
-      if (event.code === 1008) {
-        provider.shouldConnect = false;
-        setError(new Error("찾을 수 없거나 접근할 수 없는 스페이스예요."));
-      }
-    });
+    initYjs();
 
     return () => {
-      if (provider.bcconnected || provider.wsconnected) {
-        provider.disconnect();
-        provider.destroy();
+      if (
+        yProvider &&
+        ((yProvider as WebsocketProvider).bcconnected ||
+          (yProvider as WebsocketProvider).wsconnected)
+      ) {
+        (yProvider as WebsocketProvider).disconnect();
+        (yProvider as WebsocketProvider).destroy();
       }
       setYDoc(undefined);
       setYProvider(undefined);
