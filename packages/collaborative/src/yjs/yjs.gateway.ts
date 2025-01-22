@@ -155,7 +155,6 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       );
 
       this.redisService.updateRedisConnection(urlId!, 'add');
-
       urlType === 'space'
         ? await this.initializeSpace(connection, request, urlId as string)
         : await this.initializeNote(connection, request, urlId as string);
