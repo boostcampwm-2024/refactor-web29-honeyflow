@@ -32,6 +32,7 @@ jobs:
             mkdir -p $RELEASE_DIR
             cd $RELEASE_DIR
 
+
             # 코드 복제
             git clone -b dev https://github.com/boostcampwm-2024/refactor-web29-honeyflow .
 
@@ -40,7 +41,10 @@ jobs:
 
             # 이전 컨테이너 정리
             docker stop db-healthcheck || true && docker rm db-healthcheck || true
-            docker stop backend || true && docker rm backend || true
+            docker stop api || true && docker rm api || true
+            docker stop collaborative-room1 || true && docker rm collaborative-room1 || true
+            docker stop collaborative-room2 || true && docker rm collaborative-room2 || true
+            docker stop lb-container || true && docker rm lb-container || true
             docker stop frontend || true && docker rm frontend || true
 
             # 새 컨테이너 실행
