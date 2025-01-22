@@ -16,8 +16,8 @@ services:
       timeout: 5s
       retries: 3
 
-  backend:
-    container_name: backend
+  api:
+    container_name: api
     ports:
       - "3000:3000"
     build:
@@ -45,7 +45,7 @@ services:
   frontend:
     container_name: frontend
     depends_on:
-      backend:
+      api:
         condition: service_started
     ports:
       - "80:80"

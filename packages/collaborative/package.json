@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "collaborative",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -11,7 +11,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/backend/src/main.js",
+    "start:prod": "node dist/collaborative/src/main.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

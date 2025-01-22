@@ -4,7 +4,7 @@
   "description": "",
   "private": "true",
   "scripts": {
-    "lint": "eslint --filter \"frontend,backend\" lint",
+    "lint": "eslint --filter \"frontend,api\" lint",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
   },
