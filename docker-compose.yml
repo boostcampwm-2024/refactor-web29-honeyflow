@@ -1,43 +1,43 @@
-services:
-  api:
-    build:
-      context: .
-      dockerfile: ./packages/api
-    restart: unless-stopped
-    networks:
-      - app-network
+# services:
+#   api:
+#     build:
+#       context: .
+#       dockerfile: ./packages/api
+#     restart: unless-stopped
+#     networks:
+#       - app-network
 
-  load-balancer:
-    build:
-      context: .
-      dockerfile: ./packages/loadbalancer
-    restart: unless-stopped
-    networks:
-      - app-network
+#   load-balancer:
+#     build:
+#       context: .
+#       dockerfile: ./packages/loadbalancer
+#     restart: unless-stopped
+#     networks:
+#       - app-network
 
-  collaborative-room1:
-    build:
-      context: .
-      dockerfile: ./packages/collaborative
-    restart: unless-stopped
-    networks:
-      - app-network
+#   collaborative-room1:
+#     build:
+#       context: .
+#       dockerfile: ./packages/collaborative
+#     restart: unless-stopped
+#     networks:
+#       - app-network
 
-  collaborative-room2:
-    build:
-      context: .
-      dockerfile: ./packages/collaborative
-    restart: unless-stopped
-    networks:
-      - app-network
+#   collaborative-room2:
+#     build:
+#       context: .
+#       dockerfile: ./packages/collaborative
+#     restart: unless-stopped
+#     networks:
+#       - app-network
 
-  frontend:
-    build:
-      context: .
-      dockerfile: ./packages/frontend
-    restart: unless-stopped
-    networks:
-      - app-network
+#   frontend:
+#     build:
+#       context: .
+#       dockerfile: ./packages/frontend
+#     restart: unless-stopped
+#     networks:
+#       - app-network
 
 networks:
   app-network:
