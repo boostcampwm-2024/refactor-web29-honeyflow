@@ -14,8 +14,8 @@ services:
       timeout: 5s
       retries: 3
 
-  loadbalancer:
-    container_name: loadbalancer
+  load-balancer:
+    container_name: lb-container
     ports:
       - "4242:4242"
     build:
@@ -70,7 +70,7 @@ services:
   collaborative-room2:
     container_name: collaborative-room2
     ports:
-      - "9001:9002"
+      - "9002:9002"
     build:
       target: production
     environment:
@@ -131,11 +131,16 @@ services:
     depends_on:
       api:
         condition: service_started
+      collaborative-room1:
+        condition: service_started
+      collaborative-room2:
+        condition: service_started
+      load-balancer:
+        condition: service_started
     ports:
       - "80:80"
     environment:
       - NODE_ENV=production
-      - BACKEND_URL=http://backend:3000
     extra_hosts:
       - "db-host:${DATABASE_HOST}"
     networks:
