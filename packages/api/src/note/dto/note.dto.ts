@@ -5,4 +5,6 @@ export class CreateNoteDto {
   userId: string;
   @ApiProperty({ description: '노트 제목' })
   noteName: string;
+  @ApiProperty({ description: 'Space ID' })
+  spaceId: string | null;
 }

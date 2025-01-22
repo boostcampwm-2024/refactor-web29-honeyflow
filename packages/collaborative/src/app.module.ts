@@ -10,9 +10,14 @@ import { NoteModule } from './note/note.module';
 import { SpaceModule } from './space/space.module';
 import { YjsModule } from './yjs/yjs.module';
 import { TestModule } from './test/test.module';
+import { RedisService } from './redis/redis.service';
+import { RedisModule } from './redis/redis.module';
+import { ResourceMatricsModule } from './common/resource-matrics/resource-matrics.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -29,7 +34,10 @@ import { TestModule } from './test/test.module';
     NoteModule,
     TestModule,
     CollaborativeModule,
+    RedisModule,
+    ResourceMatricsModule,
   ],
+  providers: [RedisService],
 })
 export class AppModule implements OnModuleInit {
   private readonly logger = new Logger(AppModule.name);

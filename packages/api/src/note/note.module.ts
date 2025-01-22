@@ -4,9 +4,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { NoteController } from './note.controller';
 import { NoteDocument, NoteSchema } from './note.schema';
 import { NoteService } from './note.service';
+import { ValidationModule } from 'src/common/validation/validation.module';
 
 @Module({
   imports: [
+    ValidationModule,
     MongooseModule.forFeature([
       { name: NoteDocument.name, schema: NoteSchema },
     ]),
