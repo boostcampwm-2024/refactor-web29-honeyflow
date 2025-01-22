@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: ./packages/api
+      dockerfile: packages/api/Dockerfile
     restart: unless-stopped
     networks:
       - app-network
@@ -10,7 +10,7 @@ services:
   load-balancer:
     build:
       context: .
-      dockerfile: ./packages/loadbalancer
+      dockerfile: packages/loadbalancer/Dockerfile
     restart: unless-stopped
     networks:
       - app-network
@@ -18,7 +18,7 @@ services:
   collaborative-room1:
     build:
       context: .
-      dockerfile: ./packages/collaborative
+      dockerfile: packages/collaborative/Dockerfile
     restart: unless-stopped
     networks:
       - app-network
@@ -26,7 +26,7 @@ services:
   collaborative-room2:
     build:
       context: .
-      dockerfile: ./packages/collaborative
+      dockerfile: packages/collaborative/Dockerfile
     restart: unless-stopped
     networks:
       - app-network
@@ -34,11 +34,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: ./packages/frontend
+      dockerfile: packages/frontend/Dockerfile
     restart: unless-stopped
     networks:
       - app-network
-
-networks:
-  app-network:
-    driver: bridge
