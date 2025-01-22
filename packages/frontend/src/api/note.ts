@@ -4,6 +4,7 @@ import http from "./http";
 type CreateNoteRequestBody = {
   userId: string;
   noteName: string;
+  spaceId: string;
 };
 
 type CreateNoteResponseBody = {

@@ -4,18 +4,19 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { SpaceController } from './space.controller';
 import { SpaceDocument, SpaceSchema } from './space.schema';
 import { SpaceService } from './space.service';
-import { SpaceValidation } from './space.validation.service';
 import { NoteModule } from 'src/note/note.module';
+import { ValidationModule } from 'src/common/validation/validation.module';
 
 @Module({
   imports: [
     NoteModule,
+    ValidationModule,
     MongooseModule.forFeature([
       { name: SpaceDocument.name, schema: SpaceSchema },
     ]),
   ],
   controllers: [SpaceController],
-  providers: [SpaceService, SpaceValidation],
+  providers: [SpaceService],
   exports: [SpaceService],
 })
 export class SpaceModule {}

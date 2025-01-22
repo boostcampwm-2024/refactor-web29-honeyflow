@@ -16,13 +16,17 @@ import { ERROR_MESSAGES } from '../common/constants/error.message.constants';
 import { GUEST_USER_ID } from '../common/constants/space.constants';
 import { CreateNoteDto } from './dto/note.dto';
 import { NoteService } from './note.service';
+import { ValidationService } from 'src/common/validation/validation.service';
 
 @ApiTags('note')
 @Controller('note')
 export class NoteController {
   private readonly logger = new Logger(NoteController.name);
 
-  constructor(private readonly noteService: NoteService) {}
+  constructor(
+    private readonly noteService: NoteService,
+    private readonly validationService: ValidationService,
+  ) {}
 
   @Version('1')
   @Post()
@@ -30,15 +34,17 @@ export class NoteController {
   @ApiResponse({ status: 201, description: '노트 생성 성공' })
   @ApiResponse({ status: 400, description: '잘못된 요청' })
   async createNote(@Body() createNoteDto: CreateNoteDto) {
-    const { userId, noteName } = createNoteDto;
+    const { userId, noteName, spaceId } = createNoteDto;
 
     this.logger.log('노트 생성 요청 수신', {
       method: 'createNote',
       userId,
       noteName,
+      spaceId,
     });
 
-    if (userId !== GUEST_USER_ID || !noteName) {
+    this.logger.debug(`요청 데이터  spaceId:${spaceId}`);
+    if (userId !== GUEST_USER_ID || !noteName || !spaceId) {
       this.logger.error('노트 생성 요청 실패 - 잘못된 요청', {
         method: 'createNote',
         userId,
@@ -53,6 +59,14 @@ export class NoteController {
     }
 
     try {
+      const space = await this.validationService.validateSpaceExists(spaceId);
+
+      if (!space) {
+        throw new HttpException(
+          ERROR_MESSAGES.SPACE.NOT_FOUND,
+          HttpStatus.NOT_FOUND,
+        );
+      }
       const note = await this.noteService.create(userId, noteName);
 
       this.logger.log('노트 생성 성공', {

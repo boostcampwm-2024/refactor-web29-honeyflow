@@ -14,6 +14,7 @@ import { CollaborativeService } from '../collaborative/collaborative.service';
 import { ERROR_MESSAGES } from '../common/constants/error.message.constants';
 import { WebsocketStatus } from '../common/constants/websocket.constants';
 import { parseSocketUrl } from '../common/utils/socket.util';
+import { RedisService } from 'src/redis/redis.service';
 
 function parseDocName(docName: string) {
   const [type, id] = docName.split(':');
@@ -25,11 +26,15 @@ function parseDocName(docName: string) {
   throw new Error('Invalid docName');
 }
 
-@WebSocketGateway(9001)
+const PORT = Number(process.env.WS_PORT);
+@WebSocketGateway(PORT)
 export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(YjsGateway.name);
 
-  constructor(private readonly collaborativeService: CollaborativeService) {
+  constructor(
+    private readonly collaborativeService: CollaborativeService,
+    private readonly redisService: RedisService,
+  ) {
     this.logger.debug('constructor start');
     setPersistence({
       provider: '',
@@ -101,7 +106,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const { type, id } = parseDocName(docName);
     this.logger.debug(`문서 이름 분석 결과 - type: ${type}, id: ${id}`);
-
+    this.redisService.updateRedisConnection(id, 'remove');
     try {
       if (type === 'space') {
         const yContext = ydoc.getMap('context');
@@ -149,6 +154,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         `WebSocket 초기화 시작 - Type: ${urlType}, ID: ${urlId}`,
       );
 
+      this.redisService.updateRedisConnection(urlId!, 'add');
       urlType === 'space'
         ? await this.initializeSpace(connection, request, urlId as string)
         : await this.initializeNote(connection, request, urlId as string);
