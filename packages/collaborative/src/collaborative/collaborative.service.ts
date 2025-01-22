@@ -12,13 +12,6 @@ export class CollaborativeService {
     private readonly spaceService: SpaceService,
     private readonly noteService: NoteService,
   ) {}
-
-  // Todo
-  // Space Service
-  // Note Service에서 하던 기능을 Collaborative Service로 합쳐야함
-  // Collaborative Service에서도 코드 결합도가 높아서 collaborative.space.service collaborative.note.service로 분리 작업 필요
-  // 최종적으로 space 및 note 디렉터리 삭제 필요
-
   async updateBySpace(id: string, space: string) {
     try {
       this.logger.log('스페이스 정보 업데이트 시작', {

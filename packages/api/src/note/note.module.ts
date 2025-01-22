@@ -9,6 +9,7 @@ import { ValidationModule } from 'src/common/validation/validation.module';
 @Module({
   imports: [
     ValidationModule,
+
     MongooseModule.forFeature([
       { name: NoteDocument.name, schema: NoteSchema },
     ]),

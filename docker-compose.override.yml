@@ -144,6 +144,32 @@ services:
       - LOG_LEVEL=info
     networks:
       - app-network
+  api:
+    build:
+      context: .
+      dockerfile: ./packages/api/Dockerfile
+    container_name: api
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MYSQL_HOST=mysql-container
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=dev_db
+      - MYSQL_PASSWORD=1234
+      - MYSQL_USER=honey
+      - NODE_ENV=dev
+      - MONGO_HOST=mongodb-container
+      - MONGO_USER=honey
+      - MONGO_PASSWORD=1234
+      - MONGO_DB=dev_db
+      - LOG_LEVEL=info
+    networks:
+      - app-network
 
   load-balancer:
     build:
@@ -177,6 +203,7 @@ services:
       collaborative_room1:
         condition: service_started
       collaborative_room2:
+
         condition: service_started
       api:
         condition: service_started

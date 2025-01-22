@@ -10,6 +10,7 @@ import { SpaceService } from './space.service';
     ]),
   ],
   providers: [SpaceService],
+
   exports: [SpaceService],
 })
 export class SpaceModule {}

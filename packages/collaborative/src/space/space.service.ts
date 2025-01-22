@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { SpaceDocument } from './space.schema';
 import { ERROR_MESSAGES } from 'src/common/constants/error.message.constants';
 
+
 @Injectable()
 export class SpaceService {
   private readonly logger = new Logger(SpaceService.name);
@@ -34,6 +35,7 @@ export class SpaceService {
       );
       throw new BadRequestException(ERROR_MESSAGES.NOTE.NOT_FOUND);
     }
+
 
     const updatedSpace = await this.spaceModel
       .findOneAndUpdate({ id }, { $set: data }, { new: true })
