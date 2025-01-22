@@ -6,8 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CollaborativeModule } from './collaborative/collaborative.module';
 import { getMongooseConfig } from './common/config/mongo.config';
 import { getTypeOrmConfig } from './common/config/typeorm.config';
-import { NoteModule } from './note/note.module';
-import { SpaceModule } from './space/space.module';
 import { YjsModule } from './yjs/yjs.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
@@ -28,9 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       inject: [ConfigService],
       useFactory: getTypeOrmConfig,
     }),
-    SpaceModule,
     YjsModule,
-    NoteModule,
     CollaborativeModule,
     RedisModule,
     ResourceMatricsModule,

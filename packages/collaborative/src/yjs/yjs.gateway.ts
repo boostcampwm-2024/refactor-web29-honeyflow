@@ -10,11 +10,12 @@ import { Server, WebSocket } from 'ws';
 import { setPersistence, setupWSConnection } from 'y-websocket/bin/utils';
 import * as Y from 'yjs';
 
-import { CollaborativeService } from '../collaborative/collaborative.service';
 import { ERROR_MESSAGES } from '../common/constants/error.message.constants';
 import { WebsocketStatus } from '../common/constants/websocket.constants';
 import { parseSocketUrl } from '../common/utils/socket.util';
 import { RedisService } from 'src/redis/redis.service';
+import { CollaborativeNoteService } from 'src/collaborative/collaborative.note.service';
+import { CollaborativeSpaceService } from 'src/collaborative/collaborative.space.service';
 
 
 function parseDocName(docName: string) {
@@ -33,7 +34,8 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(YjsGateway.name);
 
   constructor(
-    private readonly collaborativeService: CollaborativeService,
+    private readonly yjsNoteService: CollaborativeNoteService,
+    private readonly yjsSpaceService:CollaborativeSpaceService,
     private readonly redisService: RedisService,
   ) {
 
@@ -59,7 +61,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       if (type === 'note') {
         this.logger.debug(`노트 데이터 가져오기 시작 - id: ${id}`);
-        const note = await this.collaborativeService.findByNote(id);
+        const note = await this.yjsNoteService.findByNote(id);
         const noteObject = note?.toObject();
 
         if (noteObject?.content) {
@@ -77,7 +79,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (type === 'space') {
         this.logger.debug(`스페이스 데이터 가져오기 시작 - id: ${id}`);
-        const space = await this.collaborativeService.findBySpace(id);
+        const space = await this.yjsSpaceService.findBySpace(id);
         const spaceObject = space?.toObject();
 
         if (!spaceObject) {
@@ -116,7 +118,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.logger.debug(
           `스페이스 상태 저장 중 - id: ${id}, context: ${JSON.stringify(yContext.toJSON())}`,
         );
-        await this.collaborativeService.updateBySpace(
+        await this.yjsSpaceService.updateBySpace(
           id,
           JSON.stringify(yContext.toJSON()),
         );
@@ -127,7 +129,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const updates = Y.encodeStateAsUpdate(ydoc);
         const encodedUpdates = Buffer.from(updates).toString('base64');
         this.logger.debug(`노트 업데이트 인코딩 완료 - id: ${id}`);
-        await this.collaborativeService.updateByNote(id, encodedUpdates);
+        await this.yjsNoteService.updateByNote(id, encodedUpdates);
       }
     } catch (e) {
       this.logger.error(`상태 저장 중 오류 발생 - docName: ${docName}`, e);
@@ -191,7 +193,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     this.logger.debug(`스페이스 초기화 시작 - id: ${urlId}`);
 
-    const space = await this.collaborativeService.findBySpace(urlId);
+    const space = await this.yjsSpaceService.findBySpace(urlId);
 
     if (!space) {
       this.logger.warn(`스페이스 존재하지 않음 - id: ${urlId}`);
@@ -238,7 +240,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     this.logger.debug(`노트 초기화 시작 - id: ${urlId}`);
 
-    const note = await this.collaborativeService.findByNote(urlId);
+    const note = await this.yjsNoteService.findByNote(urlId);
 
     if (!note) {
       this.logger.warn(`노트 존재하지 않음 - id: ${urlId}`);

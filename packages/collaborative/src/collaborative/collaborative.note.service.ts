@@ -3,11 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { ERROR_MESSAGES } from '../common/constants/error.message.constants';
-import { NoteDocument } from './note.schema';
+import { NoteDocument } from './schema/note.schema';
 
 @Injectable()
-export class NoteService {
-  private readonly logger = new Logger(NoteService.name);
+export class CollaborativeNoteService {
+  private readonly logger = new Logger(CollaborativeNoteService.name);
 
   constructor(
     @InjectModel(NoteDocument.name)
@@ -61,6 +61,60 @@ export class NoteService {
         error.stack,
       );
       throw new BadRequestException(ERROR_MESSAGES.NOTE.UPDATE_FAILED);
+    }
+  }
+
+  async updateByNote(id: string, note: string) {
+    try {
+      this.logger.log('노트 내용 업데이트 시작', {
+        method: 'updateByNote',
+        noteId: id,
+        length: note.length,
+      });
+
+      const updatedNote = await this.updateContent(id, note);
+
+      this.logger.log('노트 내용 업데이트 완료', {
+        method: 'updateByNote',
+        noteId: id,
+      });
+
+      return updatedNote;
+    } catch (error) {
+      this.logger.error('노트 내용 업데이트 실패', {
+        method: 'updateByNote',
+        noteId: id,
+        error: error.message,
+        stack: error.stack,
+      });
+      throw new BadRequestException(ERROR_MESSAGES.NOTE.UPDATE_FAILED);
+    }
+  }
+
+  async findByNote(id: string) {
+    try {
+      this.logger.log('노트 조회 시작', {
+        method: 'findByNote',
+        noteId: id,
+      });
+
+      const note = await this.findById(id);
+
+      this.logger.log('노트 조회 완료', {
+        method: 'findByNote',
+        noteId: id,
+        found: !!note,
+      });
+
+      return note;
+    } catch (error) {
+      this.logger.error('노트 조회 실패', {
+        method: 'findByNote',
+        noteId: id,
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
     }
   }
 }

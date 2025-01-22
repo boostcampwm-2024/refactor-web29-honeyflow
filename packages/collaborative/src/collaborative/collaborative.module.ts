@@ -1,12 +1,18 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 
-import { NoteModule } from '../note/note.module';
-import { SpaceModule } from '../space/space.module';
-import { CollaborativeService } from './collaborative.service';
-
+import { CollaborativeSpaceService } from './collaborative.space.service';
+import { CollaborativeNoteService } from './collaborative.note.service';
+import { NoteDocument, NoteSchema } from './schema/note.schema';
+import { SpaceDocument, SpaceSchema } from './schema/space.schema';
 @Module({
-  imports: [NoteModule, SpaceModule],
-  providers: [CollaborativeService],
-  exports: [CollaborativeService],
+  imports: [
+    MongooseModule.forFeature([
+      { name: NoteDocument.name, schema: NoteSchema },
+      { name: SpaceDocument.name, schema: SpaceSchema },
+    ]),
+  ],
+  providers: [CollaborativeSpaceService,CollaborativeNoteService],
+  exports: [CollaborativeSpaceService, CollaborativeNoteService]
 })
 export class CollaborativeModule {}
