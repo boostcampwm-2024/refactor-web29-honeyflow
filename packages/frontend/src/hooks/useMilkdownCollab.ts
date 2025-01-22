@@ -8,7 +8,7 @@ import * as Y from "yjs";
 
 type useMilkdownCollabProps = {
   editor: Editor | null;
-  websocketUrl: string | null;
+  websocketUrl: string;
   roomName: string;
 };
 
@@ -21,7 +21,6 @@ export default function useMilkdownCollab({
 }: useMilkdownCollabProps) {
   useEffect(() => {
     if (!editor) return undefined;
-    if (!websocketUrl) return undefined;
 
     const doc = new Y.Doc();
 

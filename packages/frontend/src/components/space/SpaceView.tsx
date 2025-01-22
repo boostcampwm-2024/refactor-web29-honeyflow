@@ -64,7 +64,6 @@ export default function SpaceView({ spaceId, autofitTo }: SpaceViewProps) {
           createNote({
             userId: "honeyflow",
             noteName: name,
-            spaceId,
           }).then((res) => {
             defineNode(
               {
