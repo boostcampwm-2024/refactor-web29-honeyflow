@@ -18,54 +18,61 @@ export default function useYjsConnection(docName: string) {
   useEffect(() => {
     setStatus("connecting");
 
-    const reqeustRoomNumber = async () => {
+    const requestRoomNumber = async () => {
       const response = await getRoomNumber("space", docName);
       return response.server;
     };
 
-    const roomNumber = reqeustRoomNumber();
+    const initYjs = async () => {
+      const roomNumber = await requestRoomNumber();
 
-    const doc = new Y.Doc();
-    const provider = new WebsocketProvider(
-      `${WS_URL}/${roomNumber}/space`,
-      docName,
-      doc,
-    );
-    // ws://localhost/ws/room1/space/{id를 넣어보세요}
+      const doc = new Y.Doc();
+      const provider = new WebsocketProvider(
+        `${WS_URL}/${roomNumber}/space`,
+        docName,
+        doc,
+      );
 
-    setYDoc(doc);
-    setYProvider(provider);
+      setYDoc(doc);
+      setYProvider(provider);
 
-    const { awareness } = provider;
+      const { awareness } = provider;
 
-    provider.on(
-      "status",
-      (event: { status: "connected" | "connecting" | "disconnected" }) => {
-        if (event.status === "connected") {
-          awareness.setLocalStateField("color", generateUserColor());
+      provider.on(
+        "status",
+        (event: { status: "connected" | "connecting" | "disconnected" }) => {
+          if (event.status === "connected") {
+            awareness.setLocalStateField("color", generateUserColor());
+          }
+          setStatus(event.status);
+        },
+      );
+
+      provider.once("connection-close", (event: CloseEvent) => {
+        if (event.code === 1008) {
+          provider.shouldConnect = false;
+          setError(new Error("찾을 수 없거나 접근할 수 없는 스페이스예요."));
         }
-        setStatus(event.status);
-      },
-    );
+      });
+    };
 
-    provider.once("connection-close", (event: CloseEvent) => {
-      if (event.code === 1008) {
-        provider.shouldConnect = false;
-        setError(new Error("찾을 수 없거나 접근할 수 없는 스페이스예요."));
-      }
-    });
+    initYjs();
 
     return () => {
-      if (provider.bcconnected || provider.wsconnected) {
-        provider.disconnect();
-        provider.destroy();
+      if (
+        yProvider &&
+        ((yProvider as WebsocketProvider).bcconnected ||
+          (yProvider as WebsocketProvider).wsconnected)
+      ) {
+        (yProvider as WebsocketProvider).disconnect();
+        (yProvider as WebsocketProvider).destroy();
       }
       setYDoc(undefined);
       setYProvider(undefined);
       setError(undefined);
       setStatus("disconnected");
     };
-  }, [docName]);
+  }, [docName, yProvider]);
 
   return { status, error, yProvider, yDoc, setYProvider, setYDoc };
 }
