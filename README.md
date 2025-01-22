@@ -1,7 +1,7 @@
 # HoneyFlow
 
 > Think Linked, Map Together
-> 
+>
 > 끈적끈적 꿀처럼 이루어지는 협업 지식 관리 툴
 
 <div align="center">
@@ -14,8 +14,8 @@
 
 ### 🔗 바로가기
 
-|[📜 노션](https://psychedelic-pumpkin-26b.notion.site/HoneyFlow-12a9594041ea80fc9ae3d4cff0b6cc3a)|[🎨 피그마](https://www.figma.com/design/Uewm0B9ooTzIyN1pY9ZFVl/HoneyFlow-UI?t=rGVV4Pe2usnsTZUp-1)|[📚 위키](https://github.com/boostcampwm-2024/web29-honeyflow/wiki)|[🍯 배포 주소](http://www.honeyflow.life/)|
-|:-:|:-:|:-:|:-:|
+| [📜 노션](https://psychedelic-pumpkin-26b.notion.site/HoneyFlow-12a9594041ea80fc9ae3d4cff0b6cc3a) | [🎨 피그마](https://www.figma.com/design/Uewm0B9ooTzIyN1pY9ZFVl/HoneyFlow-UI?t=rGVV4Pe2usnsTZUp-1) | [📚 위키](https://github.com/boostcampwm-2024/refactor-web29-honeyflow/wiki) | [🍯 배포 주소](http://www.honeyflow.life/) |
+| :-----------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------: | :----------------------------------------: |
 
 </div>
 
@@ -38,13 +38,13 @@
 [![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)](#)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=fff)](#)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-%2338B2AC.svg?logo=tailwind-css&logoColor=white)](#)
-[![shadcn/ui](https://img.shields.io/badge/Shadcn\/ui-000000.svg?logo=shadcnui&logoColor=white)](#)
+[![shadcn/ui](https://img.shields.io/badge/Shadcn/ui-000000.svg?logo=shadcnui&logoColor=white)](#)
 [![Milkdown](https://img.shields.io/badge/Milkdown-374151.svg?logo=markdown&logoColor=white)](#)
 
 [![Notion](https://img.shields.io/badge/Notion-000000?logo=Notion)](#)
 [![Figma](https://img.shields.io/badge/Figma-F24E1E?logo=Figma&logoColor=ffffff)](#)
 [![Slack](https://img.shields.io/badge/Slack-4A154B?logo=Slack&logoColor=ffffff)](#)
- 
+
 </div>
 
 <br/>
@@ -57,13 +57,11 @@
   <img src="https://github.com/user-attachments/assets/c4f6bd93-329c-4d42-b4bb-a02de0434d2b" width="512px" />
 </div>
 
-
 ## 🐝 주요 기능 소개
 
 **Honeyflow**는 자연스러운 인터랙션 및 애니메이션과 함께 문서를 그래프 형태로 구조화할 수 있는 협업 지식 관리 도구예요.
 
 이제 Honeyflow의 주요 기능들이 실제로 어떻게 동작하는지, 동작 화면과 함께 소개할게요!
-
 
 ### 스페이스
 
@@ -84,13 +82,12 @@
 <img alt="Cowork-space" src="https://github.com/user-attachments/assets/430d49be-db25-447c-81ec-8465e78f2e18" width="384" height="218" />
 <img alt="Cowork-note" src="https://github.com/user-attachments/assets/55628d20-5cc5-409a-ad68-8d44f275c642" width="384" height="218" />
 
-
 <br/>
-
 
 ## 🐝 우리만의 해결 경험
 
 ### 기술 선택 근거
+
 요구사항을 만족하기 위해 필요한 기술은 무엇인지, 적합한 라이브러리는 무엇인지 많은 고민을 거쳤어요. 어떤 선택을 하던지 선택은 근거가 명확히 존재하도록 했어요.
 
 - [🎨 Canvas 라이브러리, 비교와 고민](https://github.com/boostcampwm-2024/web29-honeyflow/wiki/%F0%9F%8E%A8-Canvas-%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC,-%EB%B9%84%EA%B5%90%EC%99%80-%EA%B3%A0%EB%AF%BC)
@@ -122,9 +119,7 @@ CRDT(Conflict-free Replicated Data Type)를 기반으로 한 협업 라이브러
 
 Docker를 활용해 환경을 동일하게 유지하며 CI/CD 파이프라인을 구성했어요. 개발 단계에서는 Docker-compose를 사용해 API 서버를 모의 운영했고, 이전 버전으로 복구할 수 있는 시스템을 만들어 안정성과 생산성을 높였어요.
 
-
 <br/>
-
 
 ## 🐝 디렉토리 구조
 
@@ -146,24 +141,20 @@ Docker를 활용해 환경을 동일하게 유지하며 CI/CD 파이프라인을
 └── 📄 tsconfig.json
 ```
 
-
 <br/>
-
 
 ## 🐝 인프라 아키텍처 구조
 
 <img width="747" alt="image" src="https://github.com/user-attachments/assets/4b66a3b3-2494-4a40-ad14-3674405424c5">
 
-
 <br/>
 
-
-## 🐝 팀 소개 
+## 🐝 팀 소개
 
 ### TEAM BUZZZZZ...✨
 
-| J077 김현진 | J082 나희진 | J095 문지후 | J108 박병주 | J218 전호균 | 
-|:-:|:-:|:-:|:-:|:-:| 
-|![fru1tworld](https://github.com/fru1tworld.png)|![heegenie](https://github.com/heegenie.png)|![CatyJazzy](https://github.com/CatyJazzy.png)|![parkblo](https://github.com/parkblo.png)|![hoqn](https://github.com/hoqn.png)|
-| **BE** | **FE** | **FE** | **FE** | **FE** |
-| [@fru1tworld](https://github.com/fru1tworld) |[@heegenie](https://github.com/heegenie)|[@CatyJazzy](https://github.com/CatyJazzy) |[@parkblo](https://github.com/parkblo) |[@hoqn](https://github.com/hoqn) |
+|                   J077 김현진                    |                 J082 나희진                  |                  J095 문지후                   |                J108 박병주                 |             J218 전호균              |
+| :----------------------------------------------: | :------------------------------------------: | :--------------------------------------------: | :----------------------------------------: | :----------------------------------: |
+| ![fru1tworld](https://github.com/fru1tworld.png) | ![heegenie](https://github.com/heegenie.png) | ![CatyJazzy](https://github.com/CatyJazzy.png) | ![parkblo](https://github.com/parkblo.png) | ![hoqn](https://github.com/hoqn.png) |
+|                      **BE**                      |                    **FE**                    |                     **FE**                     |                   **FE**                   |                **FE**                |
+|   [@fru1tworld](https://github.com/fru1tworld)   |   [@heegenie](https://github.com/heegenie)   |   [@CatyJazzy](https://github.com/CatyJazzy)   |   [@parkblo](https://github.com/parkblo)   |   [@hoqn](https://github.com/hoqn)   |
