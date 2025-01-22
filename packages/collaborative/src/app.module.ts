@@ -9,7 +9,6 @@ import { getTypeOrmConfig } from './common/config/typeorm.config';
 import { NoteModule } from './note/note.module';
 import { SpaceModule } from './space/space.module';
 import { YjsModule } from './yjs/yjs.module';
-import { TestModule } from './test/test.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
 import { ResourceMatricsModule } from './common/resource-matrics/resource-matrics.module';
@@ -32,7 +31,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     SpaceModule,
     YjsModule,
     NoteModule,
-    TestModule,
     CollaborativeModule,
     RedisModule,
     ResourceMatricsModule,
