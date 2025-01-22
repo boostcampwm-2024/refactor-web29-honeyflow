@@ -25,8 +25,12 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   async findConnectedServer(id: string) {
-    const key = `findConnectedServer:${id}`;
-    return await this.client.get(key);
+    const key = `ws:connection:${id}`;
+    const result = await this.client.get(key);
+    if (!result) return null;
+    const parsedResult = JSON.parse(result);
+
+    return parsedResult.serverId || null;
   }
 
   async getOptimalServer(key: string) {
