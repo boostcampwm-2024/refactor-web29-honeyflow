@@ -4,6 +4,7 @@ import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
 
 import { WS_URL } from "@/api/constants";
+import { getRoomNumber } from "@/api/load-balancer";
 import { generateUserColor } from "@/lib/utils";
 
 export default function useYjsConnection(docName: string) {
@@ -17,8 +18,20 @@ export default function useYjsConnection(docName: string) {
   useEffect(() => {
     setStatus("connecting");
 
+    const reqeustRoomNumber = async () => {
+      const response = await getRoomNumber("space", docName);
+      return response.server;
+    };
+
+    const roomNumber = reqeustRoomNumber();
+
     const doc = new Y.Doc();
-    const provider = new WebsocketProvider(`${WS_URL}/space`, docName, doc);
+    const provider = new WebsocketProvider(
+      `${WS_URL}/${roomNumber}/space`,
+      docName,
+      doc,
+    );
+    // ws://localhost/ws/room1/space/{id를 넣어보세요}
 
     setYDoc(doc);
     setYProvider(provider);
