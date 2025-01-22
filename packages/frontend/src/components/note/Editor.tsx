@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { Milkdown, MilkdownProvider } from "@milkdown/react";
@@ -6,7 +5,6 @@ import "@milkdown/theme-nord/style.css";
 import { ProsemirrorAdapterProvider } from "@prosemirror-adapter/react";
 
 import { WS_URL } from "@/api/constants";
-import { getRoomNumber } from "@/api/load-balancer";
 import useMilkdownCollab from "@/hooks/useMilkdownCollab";
 import useMilkdownEditor from "@/hooks/useMilkdownEditor";
 
@@ -15,21 +13,6 @@ import "./Editor.css";
 
 function MilkdownEditor() {
   const { noteId } = useParams<Record<"noteId", string>>();
-  const [roomNumber, setRoomNumber] = useState<string>();
-
-  useEffect(() => {
-    const requestRoomNumber = async () => {
-      const response = await getRoomNumber("note", noteId);
-      return response.server;
-    };
-
-    const initRoomNumber = async () => {
-      const roomNumber = await requestRoomNumber();
-      setRoomNumber(roomNumber);
-    };
-
-    initRoomNumber();
-  }, [noteId]);
 
   const { loading, get } = useMilkdownEditor({
     BlockView,
@@ -37,7 +20,7 @@ function MilkdownEditor() {
 
   useMilkdownCollab({
     editor: loading ? null : get() || null,
-    websocketUrl: roomNumber ? `${WS_URL}/${roomNumber}/note` : null,
+    websocketUrl: `${WS_URL}/note`,
     roomName: noteId || "",
   });
   return <Milkdown />;

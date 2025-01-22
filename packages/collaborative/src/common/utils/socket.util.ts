@@ -11,10 +11,11 @@ export function parseSocketUrl(url: string): {
 
     const parts = pathname.split('/').filter((part) => part.length > 0);
 
-    if (parts.length >= 3) {
-      return { urlType: parts[2], urlId: parts[3] };
+    if (parts.length >= 2) {
+      return { urlType: parts[1], urlId: parts[2] };
     }
     return { urlType: null, urlId: null };
+
   } catch (error) {
     return { urlType: null, urlId: null };
   }

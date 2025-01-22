@@ -8,7 +8,6 @@ import { getTypeOrmConfig } from './common/config/typeorm.config';
 import { NoteModule } from './note/note.module';
 import { SpaceModule } from './space/space.module';
 import { TestModule } from './test/test.module';
-import { ValidationModule } from './common/validation/validation.module';
 
 @Module({
   imports: [
@@ -23,9 +22,8 @@ import { ValidationModule } from './common/validation/validation.module';
       inject: [ConfigService],
       useFactory: getTypeOrmConfig,
     }),
-    ValidationModule,
-    NoteModule,
     SpaceModule,
+    NoteModule,
     TestModule,
   ],
 })
