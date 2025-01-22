@@ -50,7 +50,7 @@ services:
       - LOG_LEVEL=debug
       - REDIS_HOST=redis-container
       - REDIS_USERNAME=honey
-      - REDIS_PORT=6379
+      - REDIS_PORT=6530
       - REDIS_PASSWORD=1234
       - SERVER_ID=room1
       - WS_PORT=9001
@@ -86,7 +86,7 @@ services:
       - LOG_LEVEL=debug
       - REDIS_HOST=redis-container
       - REDIS_USERNAME=honey
-      - REDIS_PORT=6379
+      - REDIS_PORT=6530
       - REDIS_PASSWORD=1234
       - SERVER_ID=room2
       - WS_PORT=9002
@@ -135,7 +135,7 @@ services:
       - LOG_LEVEL=debug
       - REDIS_HOST=redis-container
       - REDIS_USERNAME=honey
-      - REDIS_PORT=6379
+      - REDIS_PORT=6530
       - REDIS_PASSWORD=1234
 
   frotend:
@@ -192,14 +192,23 @@ services:
     image: redis:latest
     container_name: redis-container
     ports:
-      - "6379:6379"
+      - "6530:6530"
     networks:
       - app-network
     environment:
       REDIS_DISABLE_COMMANDS: "FLUSHDB FLUSHALL"
-    command: ["redis-server", "--requirepass", "1234"]
+    command:
+      [
+        "redis-server",
+        "--port",
+        "6530",
+        "--requirepass",
+        "1234",
+        "--bind",
+        "0.0.0.0",
+      ]
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-p", "6530", "ping"]
       interval: 10s
       timeout: 5s
       retries: 3
