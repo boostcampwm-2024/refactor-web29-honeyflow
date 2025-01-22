@@ -56,6 +56,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         score: cpuUsage,
         value: serverId,
       });
+      await this.client.expire(key, 15);
     } catch (err) {}
   }
 }
