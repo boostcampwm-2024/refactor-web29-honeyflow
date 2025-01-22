@@ -72,7 +72,7 @@ export default function useYjsConnection(docName: string) {
       setError(undefined);
       setStatus("disconnected");
     };
-  }, [docName, yProvider]);
+  }, [docName]);
 
   return { status, error, yProvider, yDoc, setYProvider, setYDoc };
 }
