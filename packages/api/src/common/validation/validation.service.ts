@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SpaceDocument } from 'src/space/space.schema';
@@ -8,6 +8,7 @@ import { NoteDocument } from 'src/note/note.schema';
 
 @Injectable()
 export class ValidationService {
+  private readonly logger = new Logger(ValidationService.name);
   constructor(
     @InjectModel(NoteDocument.name)
     private readonly noteModel: Model<SpaceDocument>,
@@ -43,8 +44,10 @@ export class ValidationService {
     }
   }
 
-  async validateSpaceExists(urlPath: string) {
-    const space = await this.spaceModel.findOne({ urlPath });
+  async validateSpaceExists(id: string) {
+    const space = await this.spaceModel.findOne({ id });
+
+    this.logger.debug(`validation result : ${space}`);
 
     if (!space) {
       throw new Error(ERROR_MESSAGES.SPACE.NOT_FOUND);

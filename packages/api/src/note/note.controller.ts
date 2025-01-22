@@ -40,8 +40,10 @@ export class NoteController {
       method: 'createNote',
       userId,
       noteName,
+      spaceId,
     });
 
+    this.logger.debug(`요청 데이터  spaceId:${spaceId}`);
     if (userId !== GUEST_USER_ID || !noteName || !spaceId) {
       this.logger.error('노트 생성 요청 실패 - 잘못된 요청', {
         method: 'createNote',
