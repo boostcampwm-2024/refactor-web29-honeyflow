@@ -63,7 +63,9 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
-      - SERVER_ID=room1
+
+      # WebSocket 서버 세팅
+      - SERVER_ID=${WS1_SERVER}
       - WS_PORT=${WS1_PORT}
     networks:
       - app-network
@@ -96,7 +98,8 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
-      - SERVER_ID=room2
+      # WebSocket 세팅
+      - SERVER_ID=${WS2_SERVER}
       - WS_PORT=${WS2_PORT}
     networks:
       - app-network

@@ -27,7 +27,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   async updateRedisConnection(urlId: string, action: 'add' | 'remove') {
-    const serverId = process.env.SERVER_ID || 'default-server';
+    const serverId = process.env.SERVER_ID;
     const key = `ws:connection:${urlId}`;
     const existingData = await this.client.get(key);
 
@@ -47,7 +47,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   @Cron('*/10 * * * * *')
   async cronSystemMetrics() {
-    const serverId = process.env.SERVER_ID || 'default-server';
+    const serverId = process.env.SERVER_ID;
     const key = `server:system:metrics`;
 
     try {
