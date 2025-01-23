@@ -16,7 +16,7 @@ import useDragNode from "@/hooks/useDragNode";
 import useMoveNode from "@/hooks/useMoveNode";
 import useSpaceSelection from "@/hooks/useSpaceSelection";
 import useYjsSpace from "@/hooks/useYjsSpace";
-import { useZoomSpace } from "@/hooks/useZoomSpaceNew";
+import { useZoomSpace } from "@/hooks/useZoomSpace";
 
 import PointerLayer from "../PointerLayer";
 import GooeyNode from "./GooeyNode";
