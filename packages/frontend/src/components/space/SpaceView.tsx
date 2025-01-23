@@ -12,8 +12,7 @@ import { createSpace } from "@/api/space";
 import Edge from "@/components/Edge";
 import { HeadNode, NoteNode, SubspaceNode } from "@/components/Node";
 import useAutofit from "@/hooks/useAutofit";
-import useDragNode from "@/hooks/useDragNode";
-import useMoveNode from "@/hooks/useMoveNode";
+import useSpaceInteractions from "@/hooks/useSpaceInteractions";
 import useSpaceSelection from "@/hooks/useSpaceSelection";
 import useYjsSpace from "@/hooks/useYjsSpace";
 import { useZoomSpace } from "@/hooks/useZoomSpace";
@@ -35,7 +34,7 @@ const dragBoundFunc = function (this: Konva.Node) {
 
 export default function SpaceView({ spaceId, autofitTo }: SpaceViewProps) {
   const stageRef = React.useRef<Konva.Stage>(null);
-  const stageSize = useAutofit(autofitTo); // useAutofit 호출
+  const stageSize = useAutofit(autofitTo);
   const { zoomSpace, handleTouchMove, handleTouchEnd } = useZoomSpace({
     stageRef,
   });
@@ -52,69 +51,71 @@ export default function SpaceView({ spaceId, autofitTo }: SpaceViewProps) {
 
   const nodesArray = nodes ? Object.values(nodes) : [];
 
-  const { move, moveState } = useMoveNode({
-    nodes: nodesArray,
-    spaceActions: { updateNode },
+  const {
+    drag,
+    move,
+    dropPosition,
+    setDropPosition,
+    handlePaletteSelect,
+    nodeEventHandlers,
+  } = useSpaceInteractions(nodesArray, {
+    createNode: (type, parentNode, position, name = "New Note") => {
+      if (type === "note") {
+        createNote({
+          userId: "honeyflow",
+          noteName: name,
+          spaceId,
+        }).then((res) => {
+          defineNode(
+            {
+              type,
+              x: position.x,
+              y: position.y,
+              name,
+              src: res.urlPath.toString(),
+            },
+            parentNode.id,
+          );
+        });
+        return;
+      }
+
+      if (type === "subspace") {
+        createSpace({
+          spaceName: name,
+          userId: "honeyflow",
+          parentContextNodeId: spaceId,
+        }).then((res) => {
+          defineNode(
+            {
+              type,
+              x: position.x,
+              y: position.y,
+              name,
+              src: res.urlPath.toString(),
+            },
+            parentNode.id,
+          );
+        });
+        return;
+      }
+
+      defineNode(
+        {
+          type,
+          x: position.x,
+          y: position.y,
+          name,
+          src: "",
+        },
+        parentNode.id,
+      );
+    },
+    createEdge: (fromNode, toNode) => {
+      defineEdge(fromNode.id, toNode.id);
+    },
+    updateNode,
   });
-
-  const { drag, dropPosition, setDropPosition, handlePaletteSelect } =
-    useDragNode(nodesArray, {
-      createNode: (type, parentNode, position, name = "New Note") => {
-        if (type === "note") {
-          createNote({
-            userId: "honeyflow",
-            noteName: name,
-            spaceId,
-          }).then((res) => {
-            defineNode(
-              {
-                type,
-                x: position.x,
-                y: position.y,
-                name,
-                src: res.urlPath.toString(),
-              },
-              parentNode.id,
-            );
-          });
-          return;
-        }
-
-        if (type === "subspace") {
-          createSpace({
-            spaceName: name,
-            userId: "honeyflow",
-            parentContextNodeId: spaceId,
-          }).then((res) => {
-            defineNode(
-              {
-                type,
-                x: position.x,
-                y: position.y,
-                name,
-                src: res.urlPath.toString(),
-              },
-              parentNode.id,
-            );
-          });
-          return;
-        }
-
-        defineNode(
-          {
-            type,
-            x: position.x,
-            y: position.y,
-            name,
-            src: "",
-          },
-          parentNode.id,
-        );
-      },
-      createEdge: (fromNode, toNode) => {
-        defineEdge(fromNode.id, toNode.id);
-      },
-    });
 
   const { selectedNode, selectNode, selectedEdge, selectEdge, clearSelection } =
     useSpaceSelection();
@@ -198,9 +199,7 @@ export default function SpaceView({ spaceId, autofitTo }: SpaceViewProps) {
         key={node.id}
         id={node.id}
         name={node.name}
-        onDragStart={() => drag.handlers.onDragStart(node)}
-        onDragMove={drag.handlers.onDragMove}
-        onDragEnd={() => drag.handlers.onDragEnd()}
+        {...nodeEventHandlers(node)}
         dragBoundFunc={dragBoundFunc}
       />
     ),
@@ -212,20 +211,8 @@ export default function SpaceView({ spaceId, autofitTo }: SpaceViewProps) {
         y={node.y}
         name={node.name}
         src={node.src || ""}
-        onDragStart={() => drag.handlers.onDragStart(node)}
-        onDragMove={(e) => {
-          drag.handlers.onDragMove(e);
-          move.callbacks.monitorHoldingPosition(e);
-        }}
-        onDragEnd={(e) => {
-          drag.handlers.onDragEnd(moveState.isMoving);
-          move.callbacks.endMove(e);
-        }}
+        {...nodeEventHandlers(node)}
         dragBoundFunc={dragBoundFunc}
-        onMouseDown={(e) => move.callbacks.startHold(node, e)}
-        onMouseUp={move.callbacks.endHold}
-        onTouchStart={(e) => move.callbacks.startHold(node, e)}
-        onTouchEnd={move.callbacks.endHold}
         onContextMenu={handleContextMenu}
         onMouseEnter={handleHover}
         onMouseLeave={handleHover}
@@ -239,20 +226,8 @@ export default function SpaceView({ spaceId, autofitTo }: SpaceViewProps) {
         y={node.y}
         name={node.name}
         src={node.src || ""}
-        onDragStart={() => drag.handlers.onDragStart(node)}
-        onDragMove={(e) => {
-          drag.handlers.onDragMove(e);
-          move.callbacks.monitorHoldingPosition(e);
-        }}
-        onDragEnd={(e) => {
-          drag.handlers.onDragEnd(moveState.isMoving);
-          move.callbacks.endMove(e);
-        }}
+        {...nodeEventHandlers(node)}
         dragBoundFunc={dragBoundFunc}
-        onMouseDown={(e) => move.callbacks.startHold(node, e)}
-        onMouseUp={move.callbacks.endHold}
-        onTouchStart={(e) => move.callbacks.startHold(node, e)}
-        onTouchEnd={move.callbacks.endHold}
         onContextMenu={handleContextMenu}
         onMouseEnter={handleHover}
         onMouseLeave={handleHover}
@@ -274,11 +249,11 @@ export default function SpaceView({ spaceId, autofitTo }: SpaceViewProps) {
       startPosition={{ x: 0, y: 0 }}
       dragPosition={drag.position}
       connectionVisible={false}
-      color={moveState.isOverlapping ? "#ECE8E4" : "#FFF2CB"}
+      color={move.state.isOverlapping ? "#ECE8E4" : "#FFF2CB"}
     />
   );
 
-  const nearIndicatorRenderer = !moveState.isMoving &&
+  const nearIndicatorRenderer = !move.state.isMoving &&
     drag.position &&
     drag.startNode &&
     drag.overlapNode &&
@@ -312,7 +287,7 @@ export default function SpaceView({ spaceId, autofitTo }: SpaceViewProps) {
     <Group x={dropPosition?.x} y={dropPosition?.y}>
       <Html>
         <Popover.Root
-          open={!moveState.isMoving && Boolean(dropPosition)}
+          open={!move.state.isMoving && Boolean(dropPosition)}
           onOpenChange={(open) => !open && setDropPosition(null)}
         >
           <Popover.Anchor />
@@ -359,7 +334,7 @@ export default function SpaceView({ spaceId, autofitTo }: SpaceViewProps) {
         draggable
       >
         <Layer>
-          {moveState.isMoving
+          {move.state.isMoving
             ? gooeyNodeMovingRenderer
             : gooeyNodeCreatingRenderer}
           {nearIndicatorRenderer}
