@@ -39,6 +39,7 @@ export default tseslint.config(
       "no-shadow": "off",
       "import/no-absolute-path": "warn",
       "import/no-unresolved": "warn",
+      "no-unused-vars": "off",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
