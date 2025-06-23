@@ -73,7 +73,9 @@ fi
 
 # 4. 방화벽 설정 (선택사항)
 log_info "🔥 방화벽 설정 중..."
+
 read -p "방화벽(UFW)을 설정하시겠습니까? (y/N): " -n 1 -r
+
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo ufw --force reset
