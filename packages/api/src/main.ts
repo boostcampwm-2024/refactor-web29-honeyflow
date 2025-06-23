@@ -11,6 +11,7 @@ const ALLOWED_ORIGINS = [
   'http://www.honeyflow.life',
   'https://www.honeyflow.life',
   'http://localhost',
+  'http://localhost:80',
   'http://localhost:8080',
   'http://localhost:3000',
   'http://localhost:4173',
