@@ -11,6 +11,10 @@ const ALLOWED_ORIGINS = [
   'http://www.honeyflow.life',
   'https://www.honeyflow.life',
   'http://localhost',
+  'http://localhost:8080',
+  'http://localhost:3000',
+  'http://localhost:4173',
+  'http://localhost:5173',
 ] as string[];
 
 function configureGlobalSettings(app: INestApplication) {
