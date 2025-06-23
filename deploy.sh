@@ -36,7 +36,7 @@ COMPOSE_FILE="docker-compose.deploy.yml"
 ENV_FILE=".env"
 BACKUP_DIR="./backups/$(date +'%Y%m%d_%H%M%S')"
 
-log_info "🚀 HoneyFlow 간소화된 배포 시작..."
+log_info "🚀 HoneyFlow 배포 시작..."
 
 # 1. 환경 체크
 log_info "📋 배포 환경 체크 중..."
@@ -145,10 +145,5 @@ echo "  • 재시작:         docker compose -f $COMPOSE_FILE restart"
 echo "  • 중지:           docker compose -f $COMPOSE_FILE down"
 echo "  • 리소스 모니터링: docker stats"
 echo ""
-
-# 환경변수 확인 안내
-if grep -q "your-" .env 2>/dev/null; then
-    log_warning "⚠️  .env 파일에 기본값이 남아있습니다. 실제 값으로 변경하세요!"
-fi
 
 log_success "✅ 배포 스크립트 실행 완료" 
