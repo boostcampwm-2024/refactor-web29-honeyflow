@@ -1,0 +1,65 @@
+# =============================================================================
+# Base stage - 공통 레이어
+# =============================================================================
+FROM node:20-alpine AS base
+WORKDIR /app
+
+# 시스템 종속성 설치 (캐시 최적화)
+RUN apk add --no-cache --virtual .build-deps \
+    python3 make g++ \
+    && npm install -g pnpm \
+    && apk del .build-deps
+
+# =============================================================================
+# Dependencies stage - 의존성만 설치
+# =============================================================================
+FROM base AS deps
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY ./packages/shared/package.json ./packages/shared/
+COPY ./packages/api/package.json ./packages/api/
+
+# 의존성 설치만 (소스 코드 변경과 독립적)
+RUN HUSKY=0 pnpm install --frozen-lockfile --production=false
+
+# =============================================================================
+# Build stage - 빌드
+# =============================================================================
+FROM deps AS builder
+COPY ./packages/shared ./packages/shared/
+COPY ./packages/api ./packages/api/
+
+# TypeScript 빌드
+RUN cd ./packages/api && pnpm build
+
+# 프로덕션 의존성만 설치
+RUN HUSKY=0 pnpm install --frozen-lockfile --production --ignore-scripts
+
+# =============================================================================
+# Production stage - 최종 이미지
+# =============================================================================
+FROM node:20-alpine AS production
+
+# 보안 및 성능을 위한 사용자 생성
+RUN addgroup -g 1001 -S nodejs \
+    && adduser -S nestjs -u 1001
+
+WORKDIR /app
+
+# 빌드된 파일과 프로덕션 의존성만 복사
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/packages/api/dist ./packages/api/dist
+COPY --from=builder --chown=nestjs:nodejs /app/packages/api/package.json ./packages/api/
+COPY --from=builder --chown=nestjs:nodejs /app/packages/shared ./packages/shared
+
+# 사용자 변경
+USER nestjs
+
+WORKDIR /app/packages/api
+
+EXPOSE 3000
+
+# 헬스체크 추가
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+CMD ["node", "dist/main"] 
