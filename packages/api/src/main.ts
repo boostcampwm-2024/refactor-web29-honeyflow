@@ -16,6 +16,7 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:4173',
   'http://localhost:5173',
+  'http://13.239.239.190',
   'http://13.239.239.190:80'
 ] as string[];
 
