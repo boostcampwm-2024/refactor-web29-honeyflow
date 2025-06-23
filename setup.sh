@@ -132,44 +132,7 @@ echo "  • Disk: $(df -h / | awk 'NR==2{print $4}') available"
 echo "  • Docker: $(docker --version 2>/dev/null || echo 'Not installed')"
 echo "  • Docker Compose: $(docker-compose --version 2>/dev/null || echo 'Not installed')"
 
-# 8. 환경변수 템플릿 생성
-log_info "📄 환경변수 템플릿 생성 중..."
-cat > .env.template << 'EOF'
-# ==========================================
-# HoneyFlow 배포 환경변수
-# ==========================================
-
-NODE_ENV=production
-
-# MySQL 설정
-MYSQL_HOST=mysql-container
-MYSQL_USER=honey
-MYSQL_PASSWORD=CHANGE_THIS_PASSWORD
-MYSQL_DATABASE=honeyflow_prod
-MYSQL_ROOT_PASSWORD=CHANGE_THIS_ROOT_PASSWORD
-
-# MongoDB 설정
-MONGO_HOST=mongodb-container
-MONGO_USER=honey
-MONGO_PASSWORD=CHANGE_THIS_PASSWORD
-MONGO_DB=honeyflow_prod
-
-# Redis 설정
-REDIS_HOST=redis-container
-REDIS_PORT=6530
-REDIS_PASSWORD=CHANGE_THIS_PASSWORD
-
-# 로그 레벨
-LOG_LEVEL=info
-
-# 서버 설정 (필요시 수정)
-# SERVER_DOMAIN=yourdomain.com
-# SSL_ENABLED=false
-EOF
-
-log_success "✅ 환경변수 템플릿 생성 완료 (.env.template)"
-
-# 9. 유용한 명령어 aliases 설정
+# 8. 유용한 명령어 aliases 설정
 log_info "⚡ 유용한 명령어 별칭 설정 중..."
 cat >> ~/.bashrc << 'EOF'
 
@@ -185,7 +148,7 @@ EOF
 
 log_success "✅ 명령어 별칭 설정 완료"
 
-# 10. 마무리 및 안내
+# 9. 마무리 및 안내
 log_success "🎉 EC2 서버 초기 설정 완료!"
 
 echo ""
