@@ -6,14 +6,12 @@
 
 set -e
 
-# 색상 정의
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# 로그 함수
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -30,7 +28,6 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# 배포 설정
 PROJECT_NAME="honeyflow"
 COMPOSE_FILE="docker-compose.deploy.yml"
 ENV_FILE=".env"
@@ -38,22 +35,18 @@ BACKUP_DIR="./backups/$(date +'%Y%m%d_%H%M%S')"
 
 log_info "🚀 HoneyFlow 배포 시작..."
 
-# 1. 환경 체크
 log_info "📋 배포 환경 체크 중..."
 
-# Docker 설치 확인
 if ! command -v docker &> /dev/null; then
     log_error "Docker가 설치되어 있지 않습니다."
     exit 1
 fi
 
-# Docker Compose 설치 확인
 if ! command -v docker compose &> /dev/null; then
     log_error "Docker Compose가 설치되어 있지 않습니다."
     exit 1
 fi
 
-# 환경변수 파일 확인
 if [ ! -f "$ENV_FILE" ]; then
     log_warning "환경변수 파일이 없습니다. env.deploy.example을 복사하여 .env 파일을 만드세요."
     if [ -f "env.deploy.example" ]; then
@@ -73,55 +66,36 @@ fi
 
 log_success "✅ 환경 체크 완료"
 
-# 2. 시스템 리소스 체크
-log_info "💾 시스템 리소스 체크 중..."
-
-MEMORY_GB=$(free -g | awk '/^Mem:/{print $2}')
-
-DISK_FREE_GB=$(df -BG . | awk 'NR==2{print $4}' | sed 's/G//')
-
-log_info "메모리: ${MEMORY_GB}GB, 디스크: ${DISK_FREE_GB}GB"
-
-# 3. 기존 컨테이너 백업 및 정리
 log_info "🗂️  기존 컨테이너 정리 중..."
 
-# 백업 디렉토리 생성
 mkdir -p "$BACKUP_DIR"
 
-# 실행 중인 컨테이너 백업
 if docker compose -f "$COMPOSE_FILE" ps -q | grep -q .; then
     log_info "실행 중인 컨테이너 정보를 백업합니다..."
     docker compose -f "$COMPOSE_FILE" ps > "$BACKUP_DIR/containers_before.txt"
     docker compose -f "$COMPOSE_FILE" logs > "$BACKUP_DIR/logs_before.txt" 2>/dev/null || true
 fi
 
-# 기존 컨테이너 중지 및 제거
 log_info "기존 컨테이너 중지 중..."
 docker compose -f "$COMPOSE_FILE" down --remove-orphans || true
 
-# 사용하지 않는 이미지 정리
 log_info "사용하지 않는 Docker 이미지 정리 중..."
-docker image prune -f
+docker image prune -f --filter "dangling=true"
 
 log_success "✅ 기존 컨테이너 정리 완료"
 
-# 4. 새 컨테이너 빌드 및 실행
 log_info "🔨 새 컨테이너 빌드 및 실행 중..."
 
-# 이미지 빌드 (캐시 사용)
 log_info "Docker 이미지 빌드 중..."
-docker compose -f "$COMPOSE_FILE" build --no-cache
+docker compose -f "$COMPOSE_FILE" build
 
-# 컨테이너 실행
 log_info "컨테이너 실행 중..."
 docker compose -f "$COMPOSE_FILE" up -d
 
 log_success "✅ 컨테이너 실행 완료"
 
-# 현재 상태 저장
 docker compose -f "$COMPOSE_FILE" ps > "$BACKUP_DIR/containers_after.txt"
 
-# 서버 정보 출력
 SERVER_IP=$(curl -s ifconfig.me 2>/dev/null || echo "localhost")
 
 log_success "🎉 배포 완료!"
@@ -137,7 +111,6 @@ echo "📊 Monitoring:     http://$SERVER_IP:8080/status"
 echo "==================================================================="
 echo ""
 
-# 도커 주요 명령어 안내
 log_info "📝 도커 주요 명령어:"
 echo "  • 로그 확인:       docker compose -f $COMPOSE_FILE logs -f"
 echo "  • 상태 확인:       docker compose -f $COMPOSE_FILE ps"

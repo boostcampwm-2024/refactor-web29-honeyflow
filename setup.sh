@@ -2,19 +2,17 @@
 
 # ==========================================
 # AWS EC2 서버 초기 설정 스크립트
-# Ubuntu 22.04 LTS 기준
+# Ubuntu 22.04 LTS
 # ==========================================
 
 set -e
 
-# 색상 정의
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# 로그 함수
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -33,22 +31,18 @@ log_error() {
 
 log_info "🚀 AWS EC2 서버 초기 설정 시작..."
 
-# 1. 시스템 업데이트
 log_info "📦 시스템 패키지 업데이트 중..."
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl git unzip wget htop tree vim
 log_success "✅ 시스템 업데이트 완료"
 
-# 2. Docker 설치
 log_info "🐳 Docker 설치 중..."
 if ! command -v docker &> /dev/null; then
     curl -fsSL https://get.docker.com -o get-docker.sh
     sudo sh get-docker.sh
     
-    # Docker 그룹에 사용자 추가
     sudo usermod -aG docker $USER
     
-    # Docker 서비스 시작 및 자동 시작 설정
     sudo systemctl start docker
     sudo systemctl enable docker
     
@@ -57,13 +51,11 @@ else
     log_info "Docker가 이미 설치되어 있습니다."
 fi
 
-# 3. Docker Compose 설치
 log_info "🔧 Docker Compose 설치 중..."
 if ! command -v docker-compose &> /dev/null; then
     sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     sudo chmod +x /usr/local/bin/docker-compose
     
-    # 심볼릭 링크 생성
     sudo ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
     
     log_success "✅ Docker Compose 설치 완료"
@@ -71,7 +63,6 @@ else
     log_info "Docker Compose가 이미 설치되어 있습니다."
 fi
 
-# 4. 방화벽 설정 (선택사항)
 log_info "🔥 방화벽 설정 중..."
 
 read -p "방화벽(UFW)을 설정하시겠습니까? (y/N): " -n 1 -r
@@ -82,7 +73,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo ufw default deny incoming
     sudo ufw default allow outgoing
     
-    # 필수 포트 열기
     sudo ufw allow 22/tcp      # SSH
     sudo ufw allow 80/tcp      # HTTP
     sudo ufw allow 443/tcp     # HTTPS
@@ -96,7 +86,6 @@ else
     log_info "방화벽 설정을 건너뜁니다."
 fi
 
-# 5. 스왑 파일 생성 (메모리 부족 방지)
 log_info "💾 스왑 파일 생성 중..."
 if [ ! -f /swapfile ]; then
     sudo fallocate -l 2G /swapfile
@@ -104,7 +93,6 @@ if [ ! -f /swapfile ]; then
     sudo mkswap /swapfile
     sudo swapon /swapfile
     
-    # 영구 설정
     echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
     
     log_success "✅ 2GB 스왑 파일 생성 완료"
@@ -112,7 +100,6 @@ else
     log_info "스왑 파일이 이미 존재합니다."
 fi
 
-# 6. Git 설정
 log_info "📝 Git 기본 설정..."
 read -p "Git 사용자 이름을 입력하세요: " GIT_USERNAME
 read -p "Git 이메일을 입력하세요: " GIT_EMAIL
@@ -123,7 +110,6 @@ if [ ! -z "$GIT_USERNAME" ] && [ ! -z "$GIT_EMAIL" ]; then
     log_success "✅ Git 설정 완료"
 fi
 
-# 7. 시스템 정보 출력
 log_info "📊 시스템 정보:"
 echo "  • OS: $(lsb_release -d | cut -f2)"
 echo "  • CPU: $(nproc) cores"
@@ -132,11 +118,9 @@ echo "  • Disk: $(df -h / | awk 'NR==2{print $4}') available"
 echo "  • Docker: $(docker --version 2>/dev/null || echo 'Not installed')"
 echo "  • Docker Compose: $(docker-compose --version 2>/dev/null || echo 'Not installed')"
 
-# 8. 유용한 명령어 aliases 설정
 log_info "⚡ 유용한 명령어 별칭 설정 중..."
 cat >> ~/.bashrc << 'EOF'
 
-# HoneyFlow Docker 명령어 별칭
 alias dlogs='docker compose -f docker-compose.deploy.yml logs -f'
 alias dps='docker compose -f docker-compose.deploy.yml ps'
 alias dstop='docker compose -f docker-compose.deploy.yml down'
@@ -148,7 +132,6 @@ EOF
 
 log_success "✅ 명령어 별칭 설정 완료"
 
-# 9. 마무리 및 안내
 log_success "🎉 EC2 서버 초기 설정 완료!"
 
 echo ""
