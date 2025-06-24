@@ -184,6 +184,8 @@ services:
       context: .
       dockerfile: packages/frontend/Dockerfile
       target: production
+      args:
+        NODE_OPTIONS: --max-old-space-size=2048
     ports:
       - "80:80"
     depends_on:
