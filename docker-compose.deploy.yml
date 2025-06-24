@@ -21,11 +21,6 @@ services:
       timeout: 5s
       retries: 3
     command: --bind-address=0.0.0.0
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '1.0'
     restart: unless-stopped
 
   mongodb:
@@ -46,11 +41,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '1.0'
     restart: unless-stopped
 
   redis:
@@ -66,11 +56,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-          cpus: '0.5'
     restart: unless-stopped
 
   # =============================================================================
@@ -103,11 +88,6 @@ services:
       - LOG_LEVEL=${LOG_LEVEL}
     networks:
       - app-network
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '1.0'
     restart: unless-stopped
 
   # 단일 Collaborative 서버 (배포 최적화)
@@ -144,11 +124,6 @@ services:
       - WS_PORT=9001
     networks:
       - app-network
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '1.0'
     restart: unless-stopped
 
   # 로드 밸런서
@@ -170,11 +145,6 @@ services:
       - REDIS_PORT=${REDIS_PORT}
     networks:
       - app-network
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-          cpus: '0.5'
     restart: unless-stopped
 
   # Frontend (배포용 nginx 설정 사용)
@@ -197,11 +167,6 @@ services:
       - ./packages/frontend/nginx.deploy.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - app-network
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-          cpus: '0.5'
     restart: unless-stopped
 
 volumes:
